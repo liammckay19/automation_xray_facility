@@ -1,5 +1,6 @@
 import glob
 import imaplib
+import string
 
 import html2text as html2text
 
@@ -17,7 +18,8 @@ def search_email(search_string):
     emails_found = ''
     for login in email_logins:
         username, password = get_credentials_util.get_credentials(login)
-        emails_found += "; ".join(list(search_email_inbox(search_string, username, password)))
+        emails_found += "; ".join(list(search_email_inbox(search_string, username, password))).replace(
+            string.whitespace, "")
     return emails_found
 
 

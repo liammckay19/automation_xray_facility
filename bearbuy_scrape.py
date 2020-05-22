@@ -1,3 +1,7 @@
+import string
+
+from tqdm import tqdm
+
 import email_purchase_order_finder
 from bs4 import BeautifulSoup
 import copy
@@ -49,7 +53,7 @@ def main():
     else:
         html_files = glob.glob(os.path.join('bearbuy_requisitions', "*.html"))
     output_tsv = ""
-    for file_name in html_files:
+    for file_name in tqdm(html_files):
         rows_processed = 0
 
         with open(file_name, "r") as html_doc:
@@ -75,7 +79,6 @@ def main():
                     if len(t) > 0:
                         if "B0" in t:
                             purchase_orders.append(t)
-            print("purchase orders:", *purchase_orders)
             try:
                 findmysiblings = copy.copy(company_boxes.div.div.find('a', 'SupplierName'))
             except AttributeError as e:
@@ -113,9 +116,11 @@ def main():
                             if row:
                                 json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:-1]}
                         if json:
-                            email_list = email_purchase_order_finder.search_email(purchase_orders[po_idx].__str__().strip())
-                            json[company.string][purchase_orders[po_idx]][row[0]].append(" ".join(email_list.__str__().split()))
-                            print(email_list.__str__())
+                            email_list = email_purchase_order_finder.search_email(
+                                purchase_orders[po_idx].replace(string.whitespace, ""))
+                            json[company.string][purchase_orders[po_idx]][row[0]].append(
+                                " ".join(email_list.__str__().split()))
+                            # print(email_list.__str__())
                         po_idx += 1
                 rows_processed += 1
 
@@ -146,7 +151,8 @@ def main():
         with open(os.path.join(automation_dir, file_name.replace("html", 'json')), 'w') as json_file_out:
             js.dump(json, json_file_out)
         if json:
-            print("wrote to " + "data" + file_name.replace("html", 'json') + "\t Lines Found = " + str(rows_processed))
+            pass
+            # print("wrote to " + "data" + file_name.replace("html", 'json') + "\t Lines Found = " + str(rows_processed))
         else:
             print("json is empty for " + "data" + file_name.replace("html", 'json'))
 
