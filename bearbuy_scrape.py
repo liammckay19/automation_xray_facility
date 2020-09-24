@@ -2,6 +2,7 @@ import string
 
 from tqdm import tqdm
 
+from datetime import datetime
 import email_purchase_order_finder
 from bs4 import BeautifulSoup
 import copy
@@ -39,11 +40,17 @@ def po_information_tags(tag):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-req", "--requisition_directory", help="optional path to location of HTML files",
+    parser.add_argument("-reqtsv", "--requisition_directory", help="optional path to location of HTML files",
                         required=False)
     parser.add_argument("-file", "--file_extension", help="optional file extension for HTM files", required=False)
-    parser.add_argument("-email", "--email_find", help="optional search gmail for purchase orders", required=False)
+    parser.add_argument("-email", "--email_find", help="optional search gmail for purchase orders", required=False, action='store_true')
+    parser.add_argument("-r", "--hard_run", help="overwrite allRequisitions.tsv", required=False, action='store_true')
     args = parser.parse_args()
+    run_script = "y"
+    if os.path.exists("allRequisitions.tsv") and args.hard_run==False:
+        run_script = input("Requisition table detected. Perform BearBuy webscraping? y/n")
+    if run_script == 'n':
+        return
     if args.requisition_directory:
         if args.file_extension:
             html_files = glob.glob(os.path.join(args.requisition_directory, "*." + args.file_extension))
@@ -115,16 +122,18 @@ def main():
                         else:
                             if row:
                                 json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:-1]}
-                        if json:
-                            email_list = email_purchase_order_finder.search_email(
-                                purchase_orders[po_idx].replace(string.whitespace, ""))
-                            json[company.string][purchase_orders[po_idx]][row[0]].append(
-                                " ".join(email_list.__str__().split()))
-                            # print(email_list.__str__())
+                        # if json:
+                        #     email_list = email_purchase_order_finder.search_email(
+                        #         purchase_orders[po_idx].replace(string.whitespace, ""))
+                        #     json[company.string][purchase_orders[po_idx]][row[0]].append(
+                        #         " ".join(email_list.__str__().split()))
+                        #     print(email_list.__str__())
                         po_idx += 1
                 rows_processed += 1
 
         # add data to output_tsv string
+          # Requisition Requisition Number  Company Number  Item Description    Catalog Number  Size / Packaging    Unit Price  Quantity    Ext. Price  Date Complete   Purchase Order
+        # 
         for company, things_bought in json.items():
             for po, row in things_bought.items():
                 for number, item in row.items():
@@ -136,15 +145,20 @@ def main():
                         output_tsv += item[1] + "\t"
                     else:
                         output_tsv += "\t"
-
-                    output_tsv += item[-5] + "\t"
+                    # output_tsv += item[-5] + "\t"
                     output_tsv += item[-4] + "\t"
                     output_tsv += item[-3] + "\t"
                     output_tsv += item[-2] + "\t"
                     output_tsv += item[-1] + "\t"
                     output_tsv += date_str + "\t"
                     output_tsv += po
+                    if args.email_find==True:
+                        email_list = email_purchase_order_finder.search_email(po.replace(string.whitespace, ""))
+                        emails_related = " ".join(email_list.__str__().split())
+                        output_tsv += "\t" + emails_related # new as of 9/24/2020
                     output_tsv += "\n"
+
+
 
         json['Date'] = date_str
 
@@ -156,8 +170,10 @@ def main():
         else:
             print("json is empty for " + "data" + file_name.replace("html", 'json'))
 
+    today = datetime.today()
     # output_tsv to allRequisitions.tsv
     with open(os.path.join(automation_dir, "allRequisitions.tsv"), 'w') as tsvout:
+        tsvout.write("Scrape performed on: "+str(today)+"\n")
         tsvout.write(
             "Requisition\tRequisition Number\tCompany\tNumber\tItem Description\tCatalog Number\tSize / Packaging\tUnit Price\tQuantity\tExt. Price\tDate Complete\tPurchase Order\n")
         tsvout.write(output_tsv)

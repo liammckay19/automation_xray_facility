@@ -93,5 +93,5 @@ def main():
                                                                                             date=info['Date'],
                                                                                             emailed=info['Emailed']))
 
-
-main()
+if __name__ == '__main__':
+    main()

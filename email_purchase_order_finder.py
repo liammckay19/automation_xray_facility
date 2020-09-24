@@ -13,8 +13,7 @@ from tqdm import tqdm
 
 
 def search_email(search_string):
-    email_logins = ["credentials.json", "credentials_ucsc_email.json", "credentials_ucsf_email.json",
-                    "credentials_lmckaymsg_email.json"]
+    email_logins = [ "credentials_ucsc_email.json"]
     emails_found = ''
     for login in email_logins:
         username, password = get_credentials_util.get_credentials(login)
@@ -29,7 +28,7 @@ def search_email_inbox(search_string, username, password):
         for message in mailbox.fetch(
                 Q(
                     AND(subject=search_string,
-                        date_gte=dt.date(2019, 10, 1)
+                        date_gte=dt.date(2020, 8, 1)
                         )
                 ), miss_defect=False, miss_no_uid=False):
             yield message.subject
