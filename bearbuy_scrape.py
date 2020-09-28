@@ -38,14 +38,7 @@ def po_information_tags(tag):
         'class']
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-reqtsv", "--requisition_directory", help="optional path to location of HTML files",
-                        required=False)
-    parser.add_argument("-file", "--file_extension", help="optional file extension for HTM files", required=False)
-    parser.add_argument("-email", "--email_find", help="optional search gmail for purchase orders", required=False, action='store_true')
-    parser.add_argument("-r", "--hard_run", help="overwrite allRequisitions.tsv", required=False, action='store_true')
-    args = parser.parse_args()
+def main(args):
     run_script = "y"
     if os.path.exists("allRequisitions.tsv") and args.hard_run==False:
         run_script = input("Requisition table detected. Perform BearBuy webscraping? y/n")
