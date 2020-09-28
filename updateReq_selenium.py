@@ -1,4 +1,5 @@
 import glob
+import argparse
 
 from selenium import webdriver as wd
 from selenium.webdriver.common.action_chains import ActionChains
@@ -27,8 +28,11 @@ def wait_until_found(driver, xpath, time_to_wait=100):
     WebDriverWait(driver, time_to_wait).until(lambda driver: driver.find_element_by_xpath(xpath))
 
 
-def check_if_completed():
-    if len(glob.glob("bearbuy_requisitions/*")) > 1:
+def check_if_completed(hard_run=False):
+    if hard_run:
+        print("Downloading requisitions")
+        return True
+    elif len(glob.glob("bearbuy_requisitions/*")) > 1:
         run_this_script = input('Requisitions detected. Download requisitions? y/n')
         if run_this_script == "y":
             return True
@@ -39,10 +43,11 @@ def check_if_completed():
         return True
 
 
-def main():
+def main(args):
     global driver
     create_directories()
-    run_script = check_if_completed()
+    hard_run=args.hard_run
+    run_script = check_if_completed(hard_run)
 
     if run_script:
         username, password = get_credentials_util.get_credentials("credentials_myaccess_email.json")
