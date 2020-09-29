@@ -1,6 +1,13 @@
 # automation
- General Automation for Xray Lab Manager. This automates with Selenium/Python the hassle of going through all the previous purchase orders that have been made on BearBuy and compiles a table of purchase orders.
- 
+ General Automation for the UCSF Xray Lab Manager. 
+## Bearbuy Automation
+This automates with Selenium/Python the hassle of going through all the previous purchase orders that have been made on BearBuy and compiles a table of purchase orders.
+
+### Features:
+
+- Bearbuy requisition + purchase report + emails associated
+- Scrapes information for every Requisition into a JSON format
+
  Example:
 
 | Requisition                                               | Requisition Number | Company           | Number | Item Description                                                                                                                                            | Catalog Number | Size / Packaging | Unit Price | Quantity | Ext. Price | Date Complete      | Purchase Order |
@@ -9,13 +16,8 @@
 | bearbuy_requisitions/Summary - Requisition 125421656.html | 125421656          | FISHER SCIENTIFIC | 1      | Accessory for PIPETMAN Complete Pipetting System- Reagent Reservoirs Polystyrene White, Use With: Pipetteman complete pipetting system 50mL, F267670 10/PK  | F267670G       | PK               | 180.23     | 1/PK     | 180.23     | 11/4/2019 11:53 AM | B001774860     |
 | bearbuy_requisitions/Summary - Requisition 125421656.html | 125421656          | FISHER SCIENTIFIC | 2      | Accessory for PIPETMAN Complete Pipetting System- Reagent Reservoirs Polystyrene White, Use With: Pipetteman complete pipetting system 25mL, F267660 100/PK | F267660G       | PK               | 133.00     | 1/PK     | 133.00     | 11/4/2019 11:53 AM | B001774860     |
 
-## Features:
 
-- Bearbuy requisition + purchase report + emails associated
-- Scrapes information for every Requisition into a JSON format
-
-
-## Quickstart:
+### Quickstart:
 
 - Install Firefox https://www.mozilla.org/en-US/firefox/new/
 
