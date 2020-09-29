@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 
 def search_email(search_string):
-    email_logins = [ "credentials_ucsc_email.json"]
+    email_logins = [ "credentials_email.json"]
     emails_found = ''
     for login in email_logins:
         username, password = get_credentials_util.get_credentials(login)
