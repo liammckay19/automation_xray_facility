@@ -1,4 +1,4 @@
-# automation
+# automation_xray_facility
  General Automation for the UCSF Xray Lab Manager. 
 ## Bearbuy Automation
 This automates with Selenium/Python the hassle of going through all the previous purchase orders that have been made on BearBuy and compiles a table of purchase orders.
