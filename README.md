@@ -19,7 +19,7 @@ This automates with Selenium/Python the hassle of going through all the previous
 
 ### Quickstart:
 
-- asdfas Install Firefox https://www.mozilla.org/en-US/firefox/new/
+- Install Firefox https://www.mozilla.org/en-US/firefox/new/
   
 - Download geckodriver https://github.com/mozilla/geckodriver/releases
 - Put geckodriver exec. in <code>/usr/local/bin</code>
