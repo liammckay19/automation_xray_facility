@@ -24,7 +24,7 @@ def main():
                         required=True)
     args = parser.parse_args()
 
-    automation_dir = "/Users/liam_msg/Documents/automation"
+    automation_dir = "/"
 
     purchase_orders = set()
     with open(args.allRequsitions_path, 'r') as allRequisitions:

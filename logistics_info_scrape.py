@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 import email_purchase_order_finder
 
-automation_dir = "/Users/liam_msg/Documents/automation"
+automation_dir = "/"
 
 
 def top_table_tags(tag):

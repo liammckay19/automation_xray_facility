@@ -5,7 +5,7 @@ import os
 
 def main():
 
-    automation_dir = "/Users/liam_msg/Documents/automation"
+    automation_dir = "/"
 
     delivery_df = pd.read_csv(glob(os.path.join(automation_dir, 'logistics_info_scrape_output.tsv'))[0], sep='\t',
                               dtype=str).reset_index().drop(columns="Purchase Order").rename(columns={"index":"Purchase Order"})

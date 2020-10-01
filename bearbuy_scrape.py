@@ -14,7 +14,7 @@ import glob
 import argparse
 
 # Author Liam McKay
-automation_dir = "/Users/liam_msg/Documents/automation"
+automation_dir = "."
 
 
 def match_class(target):
@@ -138,7 +138,6 @@ def main(args):
                         output_tsv += item[1] + "\t"
                     else:
                         output_tsv += "\t"
-                    # output_tsv += item[-5] + "\t"
                     output_tsv += item[-4] + "\t"
                     output_tsv += item[-3] + "\t"
                     output_tsv += item[-2] + "\t"
@@ -146,7 +145,9 @@ def main(args):
                     output_tsv += date_str + "\t"
                     output_tsv += po
                     if args.email_find==True:
-                        email_list = email_purchase_order_finder.search_email(po.replace(string.whitespace, ""))
+                        email_list = email_purchase_order_finder.search_email(item[1].replace(string.whitespace, "")) # catalog number
+                        if email_list == []:
+                            email_list += email_purchase_order_finder.search_email(po.replace(string.whitespace, "")) # purchase order number
                         emails_related = " ".join(email_list.__str__().split())
                         output_tsv += "\t" + emails_related # new as of 9/24/2020
                     output_tsv += "\n"

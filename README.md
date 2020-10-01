@@ -19,10 +19,10 @@ This automates with Selenium/Python the hassle of going through all the previous
 
 ### Quickstart:
 
-- Install Firefox https://www.mozilla.org/en-US/firefox/new/
-
+- asdfas Install Firefox https://www.mozilla.org/en-US/firefox/new/
+  
 - Download geckodriver https://github.com/mozilla/geckodriver/releases
-- Put geckodriver exec. in <code>/usr/local/bin/geckodriver</code>
+- Put geckodriver exec. in <code>/usr/local/bin</code>
 - <code>git clone https://github.com/liammckay19/automation.git </code>
 - <code>pip install requirements.txt</code>
 - Create a file called <code>credentials_myaccess_email.json</code> with these contents in the file. UCSF email and password are required

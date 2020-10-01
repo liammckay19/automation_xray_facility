@@ -23,12 +23,16 @@ def search_email(search_string):
 
 
 def search_email_inbox(search_string, username, password):
+    search_from_date = dt.date.today() - dt.timedelta(days=90)
+
+
+
     # get list of email subjects from INBOX folder
     with MailBox('imap.gmail.com').login(username, password) as mailbox:
         for message in mailbox.fetch(
                 Q(
                     AND(subject=search_string,
-                        date_gte=dt.date(2020, 8, 1)
+                        date_gte=search_from_date
                         )
                 ), miss_defect=False, miss_no_uid=False):
             yield message.subject
