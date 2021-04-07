@@ -4,6 +4,7 @@ import get_delivery_information
 import logistics_info_scrape
 import merge_logistics_delivery_requisition
 import argparse
+import uploadToBearbuyReq
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,6 +16,7 @@ def main():
     args = parser.parse_args()
     updateReq_selenium.main(args)
     bearbuy_scrape.main(args)
+    uploadToBearbuyReq.main()
     # get_delivery_information.main()
     # logistics_info_scrape.main()
     # merge_logistics_delivery_requisition.main()

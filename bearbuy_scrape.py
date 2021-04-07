@@ -15,6 +15,14 @@ import argparse
 
 # Author Liam McKay
 automation_dir = "."
+parser = argparse.ArgumentParser()
+parser.add_argument("-reqtsv", "--requisition_directory", help="optional path to location of HTML files",
+                    required=False)
+parser.add_argument("-file", "--file_extension", help="optional file extension for HTM files", required=False)
+parser.add_argument("-email", "--email_find", help="optional search gmail for purchase orders", required=False,
+                    action='store_true')
+parser.add_argument("-r", "--hard_run", help="overwrite allRequisitions.tsv", required=False, action='store_true')
+args = parser.parse_args()
 
 
 def match_class(target):
@@ -40,7 +48,7 @@ def po_information_tags(tag):
 
 def main(args):
     run_script = "y"
-    if os.path.exists("allRequisitions.tsv") and args.hard_run==False:
+    if os.path.exists("allRequisitions.tsv") and args.hard_run == False:
         run_script = input("Requisition table detected. Perform BearBuy webscraping? y/n")
     if run_script == 'n':
         return
@@ -94,11 +102,14 @@ def main(args):
                     if "Subtotal" in company.string:
                         continue
                     if "Hide line details" not in company.string:
-                        json[company.string] = {purchase_orders[po_idx]: {}}
+                        try:
+                            json[company.string] = {purchase_orders[po_idx]: {}}
+                        except IndexError:
+                            json[company.string] = {str(po_idx) + " Pending": {}}
                         row = []
                         for i, td in enumerate(child.find_all("td", "LineSixPack")):  # item bought information
                             for a in td.stripped_strings:
-                                if "more info..." not in a:
+                                if "more info..." not in a and 'Select (' not in a:
                                     row.append(a.replace("\xa0", '').replace('USD', '').replace('\n', '/'))
                             if i > 10:
                                 splitRows = True
@@ -111,10 +122,18 @@ def main(args):
                             for i in range(len(indices) - 1):
                                 list_rows.append(row[indices[i]:indices[i + 1] - 1])
                             if list_rows:
-                                json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:] for row in list_rows}
+                                try:
+                                    json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:] for row in
+                                                                                     list_rows}
+                                except IndexError:
+                                    json[company.string][str(po_idx) + " Pending"] = {row[0]: row[1:] for row in
+                                                                                      list_rows}
                         else:
                             if row:
-                                json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:-1]}
+                                try:
+                                    json[company.string][purchase_orders[po_idx]] = {row[0]: row[1:-1]}
+                                except IndexError:
+                                    json[company.string][str(po_idx) + " Pending"] = {row[0]: row[1:-1]}
                         # if json:
                         #     email_list = email_purchase_order_finder.search_email(
                         #         purchase_orders[po_idx].replace(string.whitespace, ""))
@@ -125,7 +144,7 @@ def main(args):
                 rows_processed += 1
 
         # add data to output_tsv string
-          # Requisition Requisition Number  Company Number  Item Description    Catalog Number  Size / Packaging    Unit Price  Quantity    Ext. Price  Date Complete   Purchase Order
+        # Requisition Requisition Number  Company Number  Item Description    Catalog Number  Size / Packaging    Unit Price  Quantity    Ext. Price  Date Complete   Purchase Order
         # 
         for company, things_bought in json.items():
             for po, row in things_bought.items():
@@ -133,6 +152,20 @@ def main(args):
                     output_tsv += file_name + "\t" + file_name.split(os.sep)[-1].replace("Summary - Requisition ",
                                                                                          "").replace(".html",
                                                                                                      "") + "\t" + company + "\t" + number + "\t"
+                # "Requisition
+                    # Requisition Number
+                    # Company
+                    # Number
+                    # Item Description
+                    # Catalog Number
+                    # Size / Packaging
+                    # Unit Price
+                    # Quantity
+                    # Ext. Price
+                    # Date Complete
+                    # Purchase Order
+                    # \t\t\t\t\t\t\n")
+
                     output_tsv += item[0] + "\t"
                     if "/EA" not in item[1]:
                         output_tsv += item[1] + "\t"
@@ -144,15 +177,15 @@ def main(args):
                     output_tsv += item[-1] + "\t"
                     output_tsv += date_str + "\t"
                     output_tsv += po
-                    if args.email_find==True:
-                        email_list = email_purchase_order_finder.search_email(item[1].replace(string.whitespace, "")) # catalog number
+                    if args.email_find == True:
+                        email_list = email_purchase_order_finder.search_email(
+                            item[1].replace(string.whitespace, ""))  # catalog number
                         if email_list == []:
-                            email_list += email_purchase_order_finder.search_email(po.replace(string.whitespace, "")) # purchase order number
+                            email_list += email_purchase_order_finder.search_email(
+                                po.replace(string.whitespace, ""))  # purchase order number
                         emails_related = " ".join(email_list.__str__().split())
-                        output_tsv += "\t" + emails_related # new as of 9/24/2020
+                        output_tsv += "\t" + emails_related  # new as of 9/24/2020
                     output_tsv += "\n"
-
-
 
         json['Date'] = date_str
 
@@ -167,12 +200,12 @@ def main(args):
     today = datetime.today()
     # output_tsv to allRequisitions.tsv
     with open(os.path.join(automation_dir, "allRequisitions.tsv"), 'w') as tsvout:
-        tsvout.write("Scrape performed on: "+str(today)+"\n")
+        tsvout.write("Scrape performed on: " + str(today) + "\n")
         tsvout.write(
-            "Requisition\tRequisition Number\tCompany\tNumber\tItem Description\tCatalog Number\tSize / Packaging\tUnit Price\tQuantity\tExt. Price\tDate Complete\tPurchase Order\n")
+            "Requisition\tRequisition Number\tCompany\tNumber\tItem Description\tCatalog Number\tSize / Packaging\tUnit Price\tQuantity\tExt. Price\tDate Complete\tPurchase Order\t\t\t\t\t\t\t\n")
         tsvout.write(output_tsv)
     print("wrote to allRequisitions.tsv")
 
 
 if __name__ == '__main__':
-    main()
+    main(args)
